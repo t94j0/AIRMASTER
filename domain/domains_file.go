@@ -7,11 +7,9 @@ import (
 	"net/http/cookiejar"
 	"os"
 	"strings"
-
-	namecheap "github.com/billputer/go-namecheap"
 )
 
-func ParseFile(filePath string, ncClient *namecheap.Client) error {
+func ParseFile(filePath string) error {
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return err
@@ -27,7 +25,7 @@ func ParseFile(filePath string, ncClient *namecheap.Client) error {
 	}
 
 	for _, url := range strings.Split(string(file), "\n") {
-		if err := CheckDomain(url, client, ncClient, 0); err != nil {
+		if err := CheckDomain(url, client, 0); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	}

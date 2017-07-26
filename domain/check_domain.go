@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	namecheap "github.com/billputer/go-namecheap"
 	"github.com/spf13/viper"
 )
 
@@ -41,8 +40,7 @@ type DomainCategorization struct {
 
 // CheckDomain checks the categorization of a domain and returns a propmt when
 // a domain is found that the user might want.
-func CheckDomain(domain string, client *http.Client, ncClient *namecheap.Client, cooldown int64) error {
-	fmt.Println("Checking domain:", domain)
+func CheckDomain(domain string, client *http.Client, cooldown int64) error {
 	// Make a request to query for the specified domain
 	cat, err := makeRequest(domain, "", client)
 	if err != nil {
@@ -53,12 +51,12 @@ func CheckDomain(domain string, client *http.Client, ncClient *namecheap.Client,
 	switch cat.ErrorType {
 	case "captcha":
 		solveCaptcha(domain, client)
-		return CheckDomain(domain, client, ncClient, 0)
+		return CheckDomain(domain, client, 0)
 	case "intrusion":
 		cooldown++
 		fmt.Fprintf(os.Stderr, "Waiting %d minuites to cool down\n", cooldown)
 		time.Sleep(time.Minute * time.Duration(cooldown))
-		return CheckDomain(domain, client, ncClient, cooldown)
+		return CheckDomain(domain, client, cooldown)
 	case "":
 		// Don't use Unrated domains
 		if !cat.Unrated {
@@ -66,7 +64,7 @@ func CheckDomain(domain string, client *http.Client, ncClient *namecheap.Client,
 			// Purchase domain if that option is specified
 			if viper.GetBool("purchase") {
 				newDomain := NewDomain(cat.URL, categorization)
-				newDomain.PromptPurchase(ncClient)
+				newDomain.PromptPurchase()
 				return nil
 			} else {
 				fmt.Println("Found:", cat.URL, "-", categorization)
@@ -157,10 +155,13 @@ func solveCaptcha(domain string, client *http.Client) {
 	output := strings.TrimSpace(strings.Trim(out.String(), " "))
 
 	// Make request to stop IP blacklist
-	if dmn, err := makeRequest(domain, output, client); err != nil {
+	dmn, err := makeRequest(domain, output, client)
+	if err != nil {
 		fmt.Println("Error making request:", err)
 		return
 	} else if dmn.ErrorType == "captcha" {
 		solveCaptcha(domain, client)
 	}
+
+	return
 }

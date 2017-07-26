@@ -2,14 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/t94j0/AIRMASTER/domain"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	namecheap "github.com/billputer/go-namecheap"
 )
 
 var purchase bool
@@ -23,21 +20,23 @@ var listCmd = &cobra.Command{
 	Long:  `List domains and have the option to purchase the domains as well`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Configure Namecheap client
-		apiUser, apiToken, username := viper.GetString("apiUser"), viper.GetString("apiToken"), viper.GetString("username")
-		if apiUser == "" || apiToken == "" || username == "" {
-			fmt.Println("Please specify namecheap API tokens")
-			os.Exit(1)
-		}
+		/*
+			apiUser, apiToken, username := viper.GetString("apiUser"), viper.GetString("apiToken"), viper.GetString("username")
+			if apiUser == "" || apiToken == "" || username == "" {
+				fmt.Println("Please specify namecheap API tokens")
+				os.Exit(1)
+			}
 
-		ncClient := namecheap.NewClient(apiUser, apiToken, username)
+			ncClient := namecheap.NewClient(apiUser, apiToken, username)
+		*/
 
 		// Configure domain finding mechanism
 		if viper.GetString("file") != "" {
-			if err := domain.ParseFile(viper.GetString("file"), ncClient); err != nil {
+			if err := domain.ParseFile(viper.GetString("file")); err != nil {
 				fmt.Println(err)
 			}
 		} else if len(viper.GetStringSlice("keyword")) != 0 {
-			if err := domain.ParseKeywords(viper.GetStringSlice("keyword"), ncClient); err != nil {
+			if err := domain.ParseKeywords(viper.GetStringSlice("keyword")); err != nil {
 				fmt.Println(err)
 			}
 		} else {

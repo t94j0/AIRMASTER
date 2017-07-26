@@ -3,11 +3,11 @@ package domain
 import (
 	"fmt"
 	"net/http"
+	"net/http/cookiejar"
 	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	namecheap "github.com/billputer/go-namecheap"
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +30,7 @@ type ExpiredDomain struct {
 	Status        string
 }
 
-func ParseKeywords(keywords []string, ncClient *namecheap.Client) error {
+func ParseKeywords(keywords []string) error {
 	pages := viper.GetInt("pages")
 	keyword := strings.Join(keywords, " ")
 
@@ -49,7 +49,14 @@ func ParseKeywords(keywords []string, ncClient *namecheap.Client) error {
 
 	fmt.Println("Done getting domains")
 
-	client := http.DefaultClient
+	jar, err := cookiejar.New(&cookiejar.Options{})
+	if err != nil {
+		return err
+	}
+
+	client := &http.Client{
+		Jar: jar,
+	}
 
 	// Only get domains that are not `Bid` or `In Auction`
 	for _, domain := range rawDomains {
@@ -57,7 +64,7 @@ func ParseKeywords(keywords []string, ncClient *namecheap.Client) error {
 			!strings.Contains(domain.Status, "Bid") &&
 			!strings.Contains(domain.Status, "Auction") {
 
-			if err := CheckDomain(domain.Site, client, ncClient, 0); err != nil {
+			if err := CheckDomain(domain.Site, client, 0); err != nil {
 				fmt.Println("Error checking domain:", err)
 			}
 		}
