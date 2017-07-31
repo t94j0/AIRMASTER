@@ -31,3 +31,30 @@ Right now, this only supports listing domains that a red team might want to purc
 If multiple keywords are specified, they are combined by AND, so in the example above, you will get `maxiscool.com, max-is-kinda-cool.com, cool-memes-to-the-max.com`
 
 The help should be very obvious, so if you are stuck, try using `AIRMASTER --help`
+
+## Config
+
+You can access the configuration by editing the `~/.AIRMASTER.yaml` file.
+
+The options are:
+* (*) user - Used for whois data
+	* first - Your first name
+	* middle - Your middle name
+	* last - Your last name
+	* organization - Organization that you belong to
+	* title - Title at organization
+	* email - Email for contact
+	* phone - Phone number (format: TODO)
+	* fax - Fax number
+	* mailing - Mailing number
+* godaddy - Godaddy configuration
+	* key
+	* secret
+* namecheap - Namecheap configuration
+	* user
+	* key
+	* username
+* file - Sets location for file to check domains from
+* keyword - Set keywords
+
+(*) is required

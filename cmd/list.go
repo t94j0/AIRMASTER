@@ -19,23 +19,6 @@ var listCmd = &cobra.Command{
 	Short: "List domains to purchase",
 	Long:  `List domains and have the option to purchase the domains as well`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Check namecheap and godaddy keys
-		godaddyKey, godaddySecret := viper.GetString("godaddy.key"), viper.GetString("godaddy.secret")
-		if godaddyKey == "" || godaddySecret == "" {
-			fmt.Println("Not using GoDaddy")
-		} else {
-			fmt.Println("Using GoDaddy")
-			viper.Set("usingGodaddy", true)
-		}
-
-		ncUser, ncKey, ncUsername := viper.GetString("namecheap.user"), viper.GetString("namecheap.key"), viper.GetString("namecheap.username")
-		if ncUser == "" || ncKey == "" || ncUsername == "" {
-			fmt.Println("Not using Namecheap")
-		} else {
-			fmt.Println("Using Namecheap")
-			viper.Set("usingNamecheap", true)
-		}
-
 		// Configure domain finding mechanism
 		if viper.GetString("file") != "" {
 			if err := domain.ParseFile(viper.GetString("file")); err != nil {
@@ -62,6 +45,4 @@ func init() {
 	listCmd.Flags().Int("pages", 10, "How many pages of data to get when using the --keyword option")
 	viper.BindPFlags(listCmd.Flags())
 
-	viper.SetDefault("usingGodaddy", false)
-	viper.SetDefault("usingNamecheap", false)
 }

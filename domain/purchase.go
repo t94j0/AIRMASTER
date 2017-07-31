@@ -7,16 +7,24 @@ import (
 	"os"
 	"strings"
 
-	namecheap "github.com/billputer/go-namecheap"
 	"github.com/spf13/viper"
 	"github.com/t94j0/godaddy"
 )
 
+type Registrars interface {
+	// GetName returns the name of the registrar
+	GetName() string
+
+	// IsAvailable returns if the domain is available and the price
+	IsAvailable(domain string) (bool, uint64, error)
+
+	// Purchase takes a domains and buys it
+	Purchase(domain string) error
+}
+
 type Domain struct {
 	URL            string
 	Categorization string
-	GodaddyPrice   uint64
-	NamecheapPrice uint64
 }
 
 var ErrUnavailable = errors.New("Domain unavailable")
@@ -29,35 +37,40 @@ func (d *Domain) PromptPurchase() {
 	fmt.Println("This feature has not been implemented!")
 	return
 
-	var godaddyClient *godaddy.Client
-
-	if viper.GetBool("usingGodaddy") {
-		godaddyClient = godaddy.NewClient(viper.GetString("godaddy.key"), viper.GetString("godaddy.secret"))
+	clientList := []Registrars{
+		godaddy.NewClient(
+			viper.GetString("godaddy.key"),
+			viper.GetString("godaddy.secret"),
+			godaddy.Contact{
+				viper.GetString("user.first"),
+				viper.GetString("user.middle"),
+				viper.GetString("user.last"),
+				viper.GetString("user.organization"),
+				viper.GetString("user.title"),
+				viper.GetString("user.email"),
+				viper.GetString("user.phone"),
+				viper.GetString("user.fax"),
+				viper.GetString("user.mailing"),
+			},
+		),
 	}
 
-	if d.isAvailable(godaddyClient) {
-		fmt.Println("Domain", d.URL, "("+d.Categorization+")"+" is available")
-		fmt.Printf("Would you like to purchase (y/N): ")
-		reader := bufio.NewReader(os.Stdin)
-		input, _ := reader.ReadString('\n')
-		if strings.Contains(input, "Y") || strings.Contains(input, "y") {
-			d.purchase(nil)
-		} else {
-			return
+	for _, client := range clientList {
+		isAvailable, price, err := client.IsAvailable(d.URL)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error getting availability:", err)
+			continue
 		}
-	}
-}
-
-func (d *Domain) isAvailable(g *godaddy.Client) bool {
-	available, price, _ := g.IsAvailable(d.URL)
-	if available {
-		d.GodaddyPrice = price
-	}
-	return available
-}
-
-func (d *Domain) purchase(client *namecheap.Client) {
-	if _, err := client.DomainsGetList(); err != nil {
-		fmt.Println(err)
+		if isAvailable {
+			fmt.Printf(
+				"Would you like to purchase \"%s\" (%s) for %d from %s (y/N): ",
+				d.URL, d.Categorization, price, client.GetName,
+			)
+			reader := bufio.NewReader(os.Stdin)
+			input, _ := reader.ReadString('\n')
+			if strings.Contains(input, "Y") || strings.Contains(input, "y") {
+				client.Purchase(d.URL)
+			}
+		}
 	}
 }
