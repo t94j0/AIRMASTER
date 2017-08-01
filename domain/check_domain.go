@@ -63,7 +63,11 @@ func CheckDomain(domain string, client *http.Client, cooldown int64) error {
 			categorization := getCategorization(cat.Categorization)
 			// Purchase domain if that option is specified
 			if viper.GetBool("purchase") {
-				newDomain := NewDomain(cat.URL, categorization)
+				domainURL, err := url.Parse(cat.URL)
+				if err != nil {
+					return err
+				}
+				newDomain := NewDomain(domainURL.Host, categorization)
 				newDomain.PromptPurchase()
 				return nil
 			} else {

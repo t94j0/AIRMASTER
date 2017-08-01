@@ -48,6 +48,9 @@ func ParseKeywords(keywords []string) error {
 	}
 
 	fmt.Println("Done getting domains")
+	if len(rawDomains) == 0 {
+		fmt.Println("No domains found")
+	}
 
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
@@ -65,7 +68,7 @@ func ParseKeywords(keywords []string) error {
 			!strings.Contains(domain.Status, "Auction") {
 
 			if err := CheckDomain(domain.Site, client, 0); err != nil {
-				fmt.Println("Error checking domain:", err)
+				fmt.Println("Error checking domain ("+domain.Site+"):", err)
 			}
 		}
 	}

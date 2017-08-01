@@ -30,29 +30,39 @@ type Domain struct {
 var ErrUnavailable = errors.New("Domain unavailable")
 
 func NewDomain(url, categorization string) *Domain {
-	return &Domain{url, categorization, 0, 0}
+	return &Domain{url, categorization}
 }
 
 func (d *Domain) PromptPurchase() {
-	fmt.Println("This feature has not been implemented!")
-	return
+	var clientList []Registrars
 
-	clientList := []Registrars{
-		godaddy.NewClient(
-			viper.GetString("godaddy.key"),
-			viper.GetString("godaddy.secret"),
-			godaddy.Contact{
-				viper.GetString("user.first"),
-				viper.GetString("user.middle"),
-				viper.GetString("user.last"),
-				viper.GetString("user.organization"),
-				viper.GetString("user.title"),
-				viper.GetString("user.email"),
-				viper.GetString("user.phone"),
-				viper.GetString("user.fax"),
-				viper.GetString("user.mailing"),
+	godaddyClient, err := godaddy.NewClient(
+		viper.GetString("godaddyKey"),
+		viper.GetString("godaddySecret"),
+		godaddy.Contact{
+			viper.GetString("first"),
+			viper.GetString("middle"),
+			viper.GetString("last"),
+			viper.GetString("organization"),
+			viper.GetString("title"),
+			viper.GetString("email"),
+			viper.GetString("phone"),
+			viper.GetString("fax"),
+			godaddy.Address{
+				viper.GetString("address"),
+				viper.GetString("city"),
+				viper.GetString("state"),
+				viper.GetString("postal"),
+				viper.GetString("country_code"),
 			},
-		),
+		},
+	)
+
+	// TODO: Have a more elegant way to handle this
+	if err == nil {
+		clientList = append(clientList, godaddyClient)
+	} else {
+		fmt.Println(err)
 	}
 
 	for _, client := range clientList {
@@ -61,16 +71,21 @@ func (d *Domain) PromptPurchase() {
 			fmt.Fprintln(os.Stderr, "Error getting availability:", err)
 			continue
 		}
+
 		if isAvailable {
 			fmt.Printf(
 				"Would you like to purchase \"%s\" (%s) for %d from %s (y/N): ",
-				d.URL, d.Categorization, price, client.GetName,
+				d.URL, d.Categorization, price, client.GetName(),
 			)
 			reader := bufio.NewReader(os.Stdin)
 			input, _ := reader.ReadString('\n')
 			if strings.Contains(input, "Y") || strings.Contains(input, "y") {
-				client.Purchase(d.URL)
+				if err := client.Purchase(d.URL); err != nil {
+					fmt.Fprintln(os.Stderr, "Error purchasing domain:", err)
+				}
 			}
+		} else {
+			fmt.Printf("Found %s, but not available\n", d.URL)
 		}
 	}
 }

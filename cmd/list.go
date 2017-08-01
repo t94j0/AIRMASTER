@@ -19,6 +19,7 @@ var listCmd = &cobra.Command{
 	Short: "List domains to purchase",
 	Long:  `List domains and have the option to purchase the domains as well`,
 	Run: func(cmd *cobra.Command, args []string) {
+		checkConfig()
 		// Configure domain finding mechanism
 		if viper.GetString("file") != "" {
 			if err := domain.ParseFile(viper.GetString("file")); err != nil {
@@ -34,6 +35,32 @@ var listCmd = &cobra.Command{
 		}
 
 	},
+}
+
+func checkConfig() {
+	godaddyConfig := []string{
+		"godaddyKey",
+		"godaddySecret",
+		"first",
+		"middle",
+		"last",
+		"organization",
+		"title",
+		"email",
+		"phone",
+		"address",
+		"city",
+		"state",
+		"postal",
+		"country_code",
+	}
+
+	for _, c := range godaddyConfig {
+		if viper.GetString(c) == "" {
+			fmt.Printf("Not using GoDaddy (Provide %s)\n", c)
+			break
+		}
+	}
 }
 
 func init() {

@@ -46,7 +46,10 @@ The options are:
 	* email - Email for contact
 	* phone - Phone number (format: TODO)
 	* fax - Fax number
-	* mailing - Mailing number
+	* address
+	* city
+	* postal
+	* country_code - ISO ["Alpha 2 Code"](http://www.nationsonline.org/oneworld/country_code_list.htm)
 * godaddy - Godaddy configuration
 	* key
 	* secret
