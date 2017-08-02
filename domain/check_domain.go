@@ -39,7 +39,7 @@ type DomainCategorization struct {
 }
 
 // Cooldown is how long to wait when "intrusion" is returned
-const Cooldown = 5.5
+const Cooldown = 6
 
 // CheckDomain checks the categorization of a domain and returns a propmt when
 // a domain is found that the user might want.
