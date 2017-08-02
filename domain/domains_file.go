@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// ParseFile takes a path and runs every domain through the CheckDomain function
 func ParseFile(filePath string) error {
 	file, err := ioutil.ReadFile(filePath)
 	if err != nil {

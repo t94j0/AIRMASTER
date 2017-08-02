@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ExpiredDomain is returned from scraping expireddomains.com
 type ExpiredDomain struct {
 	Site          string
 	Registrars    string
@@ -30,6 +31,8 @@ type ExpiredDomain struct {
 	Status        string
 }
 
+// ParseKeywords takes a list of keywords and scrapes expireddomains.com for
+// keywords and passes them into CheckDomain
 func ParseKeywords(keywords []string) error {
 	pages := viper.GetInt("pages")
 	keyword := strings.Join(keywords, " ")

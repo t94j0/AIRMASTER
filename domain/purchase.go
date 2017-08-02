@@ -65,7 +65,11 @@ func (d *Domain) PromptPurchase() {
 	for {
 		fmt.Printf("Choose an option: ")
 		reader := bufio.NewReader(os.Stdin)
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			break
+		}
 		input = strings.Trim(input, "\n")
 		choice, err := strconv.Atoi(input)
 		if err != nil {
@@ -85,6 +89,9 @@ func (d *Domain) PromptPurchase() {
 			fmt.Fprintln(os.Stderr, "Error purchasing domain:", err)
 			break
 		}
+
+		fmt.Println("Success!")
+		break
 	}
 	fmt.Printf("\n\n")
 }

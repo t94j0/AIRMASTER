@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-// DomainCategorization is a struct that is returned by bluecoat when asked
+// Categorization is a struct that is returned by bluecoat when asked
 // to classify a domain
-type DomainCategorization struct {
+type Categorization struct {
 	// URL of domain
 	URL string `json:"url"`
 	// Error is returned if there is an error checking the domain
@@ -73,10 +73,9 @@ func CheckDomain(domain string, client *http.Client) error {
 				newDomain := NewDomain(domainURL.Host, categorization)
 				newDomain.PromptPurchase()
 				return nil
-			} else {
-				fmt.Println("Found:", cat.URL, "-", categorization)
-				return nil
 			}
+			fmt.Println("Found:", cat.URL, "-", categorization)
+			return nil
 		}
 	default:
 		return errors.New(cat.Error)
@@ -85,8 +84,8 @@ func CheckDomain(domain string, client *http.Client) error {
 }
 
 // makeRequest makes a bluecoat domain categorization request and returns a
-// DomainCategorization object
-func makeRequest(domain, captcha string, client *http.Client) (*DomainCategorization, error) {
+// Categorization object
+func makeRequest(domain, captcha string, client *http.Client) (*Categorization, error) {
 	// Set captcha if a captcha is specified
 	v := url.Values{}
 	if captcha != "" {
@@ -114,7 +113,7 @@ func makeRequest(domain, captcha string, client *http.Client) (*DomainCategoriza
 		return nil, err
 	}
 
-	cat := &DomainCategorization{}
+	cat := &Categorization{}
 	if err := json.NewDecoder(response.Body).Decode(cat); err != nil {
 		fmt.Println(err)
 		return nil, err
