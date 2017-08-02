@@ -47,15 +47,19 @@ func (d *Domain) PromptPurchase() {
 		return
 	}
 
+	fmt.Printf(
+		"Found available domain %s (%s)\n",
+		d.URL,
+		d.Categorization,
+	)
+
 	// Give the user options for how to purchase the domain, or the option not to
 	fmt.Println("-1. Do not purchase")
 
 	for i, registrar := range availableRegistrars {
 		fmt.Printf(
-			"%d. %s (%s) available on %s for $%d\n",
+			"%d. Purchase with %s for $%d\n",
 			i,
-			d.URL,
-			d.Categorization,
 			registrar.GetName(),
 			prices[i],
 		)

@@ -5,7 +5,7 @@
 
 * Actively maintained
 * Bypasses captcha for [bluecoat.com](https://sitereview.bluecoat.com/sitereview.jsp) by using OCR because their captcha is shit
-* Plans for purchasing domain with Namecheap and GoDaddy
+* Purchase domain names straight from the console
 
 ## Installation
 
@@ -19,7 +19,11 @@
 
 ## How to use
 
-Right now, this only supports listing domains that a red team might want to purchase. Although, you can do it one of two ways:
+### Listing domain names
+
+A good way to get a domain list is registering for [ExpiredDomains](https://www.expireddomains.net/) and using the [Export .COM feature](https://member.expireddomains.net/export/expiredcom/?export=textfile).
+
+If you want to get a domain with specific keywords, you can use the keywords feature. This will take a bit longer and have less results, but it can still work extremely well.
 
 1. With a domain list file
 
@@ -31,7 +35,25 @@ Right now, this only supports listing domains that a red team might want to purc
 
 If multiple keywords are specified, they are combined by AND, so in the example above, you will get `maxiscool.com, max-is-kinda-cool.com, cool-memes-to-the-max.com`
 
-The help should be very obvious, so if you are stuck, try using `AIRMASTER --help`
+### Purchasing domain names
+
+Purchasing domain names uses the domains found by listing domains (see above) and adds an extra step to allow you to purchase the domain name. This is very simple: just add the `--purchase` flag to the end of a `list` command
+
+Example:
+
+`AIRMASTER list --file ./path/to/file.txt --purchase`
+
+```
+max@seldon ~> AIRMASTER list --file ~/Downloads/domains_2017-08-01_16_07_03.txt --purchase
+Using config file: /Users/max/.AIRMASTER.json
+Found available domain pavpal-login-account.com (Phishing)
+-1. Do not purchase
+0. Purchase with GoDaddy for $7490000
+Choose an option: 0
+Success!
+```
+
+The help *should* be obvious, so if you are stuck, try using `AIRMASTER --help`. (Although if you are still stuck, please create an issue)
 
 ## Config
 
