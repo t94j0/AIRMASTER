@@ -42,7 +42,6 @@ func checkConfig() {
 		"godaddyKey",
 		"godaddySecret",
 		"first",
-		"middle",
 		"last",
 		"organization",
 		"title",

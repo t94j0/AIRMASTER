@@ -14,6 +14,7 @@
 1. Install [homebrew](`https://brew.sh/`)
 2. In your terminal, run `brew install tesseract`
 3. Build Go project or download a release
+4. Copy the configuration found in the Config section and place it in `~/.AIRMASTER.json`
 
 
 ## How to use
@@ -44,20 +45,42 @@ The options are:
 	* organization - Organization that you belong to
 	* title - Title at organization
 	* email - Email for contact
-	* phone - Phone number (format: TODO)
+	* phone - Phone number (format: +[country_code].XXXXXXXXXX. Ex: +1.9999999999)
 	* fax - Fax number
 	* address
 	* city
 	* postal
 	* country_code - ISO ["Alpha 2 Code"](http://www.nationsonline.org/oneworld/country_code_list.htm)
 * godaddy - Godaddy configuration
-	* key
-	* secret
-* namecheap - Namecheap configuration
-	* user
-	* key
-	* username
+	* godaddyKey
+	* godaddySecret
+* namecheap - Namecheap configuration (Not built yet!)
+	* namecheapUser 
+	* namecheapKey
+	* namecheapUsername
 * file - Sets location for file to check domains from
 * keyword - Set keywords
 
 (*) is required
+
+### Example Config
+
+Before anyone freaks out, the API key is a test key taken from [the GoDaddy docs](https://developer.godaddy.com/doc)
+
+```
+{
+    "godaddyKey": "UzQxLikm_46KxDFnbjN7cQjmw6wocia",
+    "godaddySecret": "46L26ydpkwMaKZV6uVdDWe",
+    "first": "Max",
+    "last": "Harley",
+    "organization": "Max Co.",
+    "title": "CEO",
+    "email": "maxh@maxh.io",
+    "phone": "+1.9999999",
+    "address": "1 Awesome Dr.",
+    "city": "Charleston",
+    "state": "SC",
+    "postal": "2946X",
+    "country_code": "US"
+}
+```
