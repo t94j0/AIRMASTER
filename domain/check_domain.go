@@ -38,9 +38,12 @@ type DomainCategorization struct {
 	Linkable          bool   `json:"linkable"`
 }
 
+// Cooldown is how long to wait when "intrusion" is returned
+const Cooldown = 5.5
+
 // CheckDomain checks the categorization of a domain and returns a propmt when
 // a domain is found that the user might want.
-func CheckDomain(domain string, client *http.Client, cooldown int64) error {
+func CheckDomain(domain string, client *http.Client) error {
 	// Make a request to query for the specified domain
 	cat, err := makeRequest(domain, "", client)
 	if err != nil {
@@ -51,12 +54,12 @@ func CheckDomain(domain string, client *http.Client, cooldown int64) error {
 	switch cat.ErrorType {
 	case "captcha":
 		solveCaptcha(domain, client)
-		return CheckDomain(domain, client, 0)
+		return CheckDomain(domain, client)
 	case "intrusion":
-		cooldown++
-		fmt.Fprintf(os.Stderr, "Waiting %d minuites to cool down\n", cooldown)
-		time.Sleep(time.Minute * time.Duration(cooldown))
-		return CheckDomain(domain, client, cooldown)
+
+		fmt.Fprintf(os.Stderr, "Waiting %d minuites to cool down\n", Cooldown)
+		time.Sleep(time.Minute * time.Duration(Cooldown))
+		return CheckDomain(domain, client)
 	case "":
 		// Don't use Unrated domains
 		if !cat.Unrated {

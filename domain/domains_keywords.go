@@ -67,7 +67,7 @@ func ParseKeywords(keywords []string) error {
 			!strings.Contains(domain.Status, "Bid") &&
 			!strings.Contains(domain.Status, "Auction") {
 
-			if err := CheckDomain(domain.Site, client, 0); err != nil {
+			if err := CheckDomain(domain.Site, client); err != nil {
 				fmt.Println("Error checking domain ("+domain.Site+"):", err)
 			}
 		}

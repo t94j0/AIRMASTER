@@ -110,12 +110,10 @@ var list = map[int]string{
 func getCategorization(categorization string) string {
 	output := ""
 	for i := 0; i < 150; i++ {
-		if strings.Contains(categorization,
-			"'catdesc.jsp?catnum="+strconv.Itoa(i)+"'") {
+		if strings.Contains(categorization, "'catdesc.jsp?catnum="+strconv.Itoa(i)+"'") {
 			output += list[i] + " and "
 		}
 	}
 
-	return strings.TrimRight(output,
-		" and ")
+	return strings.TrimRight(output, " and ")
 }
