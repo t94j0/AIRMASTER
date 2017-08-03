@@ -57,7 +57,7 @@ The help *should* be obvious, so if you are stuck, try using `AIRMASTER --help`.
 
 ## Config
 
-You can access the configuration by editing the `~/.AIRMASTER.yaml` file.
+You can access the configuration by editing the `~/.AIRMASTER.json` file.
 
 The options are:
 * (*) user - Used for whois data
