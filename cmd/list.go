@@ -20,20 +20,20 @@ var listCmd = &cobra.Command{
 	Long:  `List domains and have the option to purchase the domains as well`,
 	Run: func(cmd *cobra.Command, args []string) {
 		checkConfig()
+		switch {
 		// Configure domain finding mechanism
-		if viper.GetString("file") != "" {
+		case viper.GetString("file") != "":
 			if err := domain.ParseFile(viper.GetString("file")); err != nil {
 				fmt.Println(err)
 			}
-		} else if len(viper.GetStringSlice("keyword")) != 0 {
+		case len(viper.GetStringSlice("keyword")) != 0:
 			if err := domain.ParseKeywords(viper.GetStringSlice("keyword")); err != nil {
 				fmt.Println(err)
 			}
-		} else {
+		default:
 			fmt.Println("Please specify either a file or keywords")
 			fmt.Println(cmd.Usage())
 		}
-
 	},
 }
 
@@ -66,6 +66,7 @@ func init() {
 	RootCmd.AddCommand(listCmd)
 
 	listCmd.Flags().BoolP("purchase", "p", false, "Purchase domains that are listed")
+	listCmd.Flags().Bool("expiredcom", false, "Uses the current list of deleted .com domains from expiredomains.com")
 	listCmd.Flags().StringP("file", "f", "", "File used for checking domains")
 	listCmd.Flags().StringSliceP("keyword", "k", nil, "Keyword for searching domains")
 	listCmd.Flags().Int("pages", 10, "How many pages of data to get when using the --keyword option")
