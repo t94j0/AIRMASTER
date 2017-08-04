@@ -74,7 +74,7 @@ func CheckDomain(domain string, client *http.Client) error {
 				newDomain.PromptPurchase()
 				return nil
 			}
-			fmt.Println("Found:", cat.URL, "-", categorization)
+			fmt.Println(cat.URL, "-", categorization)
 			return nil
 		}
 	default:

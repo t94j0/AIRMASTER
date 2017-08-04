@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/t94j0/AIRMASTER/domain"
 
@@ -70,6 +71,9 @@ func init() {
 	listCmd.Flags().StringP("file", "f", "", "File used for checking domains")
 	listCmd.Flags().StringSliceP("keyword", "k", nil, "Keyword for searching domains")
 	listCmd.Flags().Int("pages", 10, "How many pages of data to get when using the --keyword option")
-	viper.BindPFlags(listCmd.Flags())
+	if err := viper.BindPFlags(listCmd.Flags()); err != nil {
+		fmt.Fprintln(os.Stderr, "Error binding flags:", err)
+		os.Exit(1)
+	}
 
 }

@@ -44,6 +44,7 @@ func (d *Domain) PromptPurchase() {
 	// Get all registrars that have the domain available
 	availableRegistrars, prices := getAvailability(d.URL, allRegistrars)
 	if len(availableRegistrars) == 0 {
+		fmt.Fprintln(os.Stderr, "No available registrars found for domain:", d.URL)
 		return
 	}
 
@@ -77,11 +78,11 @@ func (d *Domain) PromptPurchase() {
 		input = strings.Trim(input, "\n")
 		choice, err := strconv.Atoi(input)
 		if err != nil {
-			fmt.Println("Please input a number...")
+			fmt.Fprintln(os.Stderr, "Please input a number...")
 			continue
 		}
 		if len(availableRegistrars) < choice || choice < -1 {
-			fmt.Println("Not a choice")
+			fmt.Fprintln(os.Stderr, "Not a choice")
 			continue
 		}
 

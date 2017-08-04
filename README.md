@@ -53,6 +53,16 @@ Choose an option: 0
 Success!
 ```
 
+Another way to purchase domains is actually to use output from the `list` command. This is useful if you want to leave AIRMASTER alone for a while while you grab a coffee, or while you're reading documentation on Windows Me because your target is using that for some reason.
+
+```
+AIRMASTER list --file ~/Downloads/domains.txt > /tmp/available
+
+*20 minuites later* - Edit list from /tmp/available as you'd like to
+
+AIRMASTER purchase --list /tmp/available
+```
+
 The help *should* be obvious, so if you are stuck, try using `AIRMASTER --help`. (Although if you are still stuck, please create an issue)
 
 ## Config
