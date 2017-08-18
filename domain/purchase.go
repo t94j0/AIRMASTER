@@ -2,15 +2,16 @@ package domain
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/t94j0/godaddy"
 )
 
+// Registrars is an interface for purchasing domain names
 type Registrars interface {
 	// GetName returns the name of the registrar
 	GetName() string
@@ -22,18 +23,84 @@ type Registrars interface {
 	Purchase(domain string) error
 }
 
+// Domain is a description of the domain with categorization
 type Domain struct {
 	URL            string
 	Categorization string
 }
 
-var ErrUnavailable = errors.New("Domain unavailable")
-
+// NewDomain creates a new Domain struct that can be used to check availability
+// and purchase domains
 func NewDomain(url, categorization string) *Domain {
 	return &Domain{url, categorization}
 }
 
+// PromptPurchase is a CUI for purchasing a domain. It uses the helpers given
+// to actually purchase it.
 func (d *Domain) PromptPurchase() {
+	// Get all registrars that user has enabled
+	allRegistrars := getRegistrars()
+
+	// Get all registrars that have the domain available
+	availableRegistrars, prices := getAvailability(d.URL, allRegistrars)
+	if len(availableRegistrars) == 0 {
+		fmt.Fprintln(os.Stderr, "No available registrars found for domain:", d.URL)
+		return
+	}
+
+	fmt.Printf(
+		"Found available domain %s (%s)\n",
+		d.URL,
+		d.Categorization,
+	)
+
+	// Give the user options for how to purchase the domain, or the option not to
+	fmt.Println("-1. Do not purchase")
+
+	for i, registrar := range availableRegistrars {
+		fmt.Printf(
+			"%d. Purchase with %s for $%d\n",
+			i,
+			registrar.GetName(),
+			prices[i],
+		)
+	}
+
+	// UI for purchasing the domain
+	for {
+		fmt.Printf("Choose an option: ")
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			break
+		}
+		input = strings.Trim(input, "\n")
+		choice, err := strconv.Atoi(input)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Please input a number...")
+			continue
+		}
+		if len(availableRegistrars) < choice || choice < -1 {
+			fmt.Fprintln(os.Stderr, "Not a choice")
+			continue
+		}
+
+		if choice == -1 {
+			break
+		}
+
+		if err := availableRegistrars[choice].Purchase(d.URL); err != nil {
+			fmt.Fprintln(os.Stderr, "Error purchasing domain:", err)
+			break
+		}
+
+		fmt.Println("Success!")
+		break
+	}
+	fmt.Printf("\n\n")
+}
+func getRegistrars() []Registrars {
 	var clientList []Registrars
 
 	godaddyClient, err := godaddy.NewClient(
@@ -61,31 +128,26 @@ func (d *Domain) PromptPurchase() {
 	// TODO: Have a more elegant way to handle this
 	if err == nil {
 		clientList = append(clientList, godaddyClient)
-	} else {
-		fmt.Println(err)
 	}
 
-	for _, client := range clientList {
-		isAvailable, price, err := client.IsAvailable(d.URL)
+	return clientList
+}
+
+func getAvailability(domain string, allRegistrars []Registrars) ([]Registrars, []uint64) {
+	registrars := make([]Registrars, 0)
+	prices := make([]uint64, 0)
+
+	for _, registrar := range allRegistrars {
+		isAvailable, price, err := registrar.IsAvailable(domain)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Error getting availability:", err)
+			fmt.Fprintln(os.Stderr, "Error checking availablity:", err)
 			continue
 		}
-
 		if isAvailable {
-			fmt.Printf(
-				"Would you like to purchase \"%s\" (%s) for %d from %s (y/N): ",
-				d.URL, d.Categorization, price, client.GetName(),
-			)
-			reader := bufio.NewReader(os.Stdin)
-			input, _ := reader.ReadString('\n')
-			if strings.Contains(input, "Y") || strings.Contains(input, "y") {
-				if err := client.Purchase(d.URL); err != nil {
-					fmt.Fprintln(os.Stderr, "Error purchasing domain:", err)
-				}
-			}
-		} else {
-			fmt.Printf("Found %s, but not available\n", d.URL)
+			registrars = append(registrars, registrar)
+			prices = append(prices, price)
 		}
 	}
+
+	return registrars, prices
 }
