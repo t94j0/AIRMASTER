@@ -3,7 +3,6 @@
 
 ## How this project is different than [domain hunter](https://github.com/minisllc/domainhunter)
 
-* Actively maintained
 * Bypasses captcha for [bluecoat.com](https://sitereview.bluecoat.com/sitereview.jsp) by using OCR because their captcha is shit
 * Purchase domain names straight from the console
 
