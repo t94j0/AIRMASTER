@@ -1,11 +1,6 @@
 # AIRMASTER
 (Thanks [NSA Name-O-Matic](https://divergentdave.github.io/nsa-o-matic/) for the name)
 
-## How this project is different than [domain hunter](https://github.com/minisllc/domainhunter)
-
-* Bypasses captcha for [bluecoat.com](https://sitereview.bluecoat.com/sitereview.jsp) by using OCR because their captcha is shit
-* Purchase domain names straight from the console
-
 ## Installation
 
 ### macOS
